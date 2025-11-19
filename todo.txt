@@ -1,0 +1,79 @@
+Diagnostic rapide du projet React "tp---react"
+
+Résumé : j'ai analysé `package.json`, `public/index.html`, `src/index.jsx` et `src/App.jsx`.
+Voici les problèmes principaux trouvés qui empêchent le jeu React de fonctionner :
+
+1) Fichier d'entrée référencé incorrectement dans `public/index.html`
+   - `public/index.html` charge actuellement : `<script type="module" src="/src/App.jsx"></script>`
+   - Or `src/index.jsx` existe et crée la racine React (`ReactDOM.createRoot(...)`). Il faut référencer `src/index.jsx` (ou `src/main.jsx`) comme point d'entrée, pas `App.jsx`.
+   - Effet : si le navigateur charge directement `App.jsx`, le montage sur `#root` peut ne pas se faire correctement ou on risque d'avoir deux points d'entrée/confusion.
+
+2) Erreurs de code dans `src/App.jsx` (bloquantes à la compilation)
+   - Utilisation de `userState` au lieu de `useState` pour `perClick` et `perSecond` -> ReferenceError.
+   - `useEffect` est utilisé mais non importé depuis React.
+   - Plusieurs fautes de frappe : `perScond` (au lieu de `perSecond`) dans le setInterval et variable mal orthographiée.
+   - `setInterval` utilise un délai de `500` ms et ajoute `perScond`, mais l'orthographe empêche la compilation.
+   - `export default App;;` a un point-virgule en double (mineur mais à nettoyer).
+   - Ces erreurs empêchent Vite/ESBuild de compiler le module et provoquent une page blanche + erreurs dans la console du navigateur.
+
+3) Import manquant et erreurs de dépendances locales
+   - `App.jsx` n'importe pas `useEffect` : ajoutez `import { useState, useEffect } from 'react';`.
+   - Vérifier les composants importés (`./components/ClickButton`, `Score`, `Shop`) pour d'éventuelles erreurs similaires.
+
+4) Messages d'erreur à regarder (où et comment)
+   - Ouvrez la console du navigateur (F12) et regardez l'onglet Console : vous verrez les erreurs JS (ex : "userState is not defined", "useEffect is not defined", etc.).
+   - Regardez aussi le terminal où vous lancez `vite` : ESBuild/Vite donne des erreurs de compilation très lisibles.
+
+Étapes recommandées pour corriger (ordre conseillé)
+
+1) Corriger `public/index.html`
+   - Remplacez la ligne actuelle par :
+     `<script type="module" src="/src/index.jsx"></script>`
+   - Ou, si vous préférez, créer `src/main.jsx` qui appelle `index.jsx` et référencer `main.jsx`.
+
+2) Corriger `src/App.jsx` (erreurs JavaScript)
+   - En tête du fichier : `import { useState, useEffect } from 'react';`
+   - Remplacer `userState` par `useState` :
+       `const [perClick, setPerClick] = useState(1);`
+       `const [perSecond, setPerSecond] = useState(0);`
+   - Corriger les fautes : utiliser `perSecond` partout, et dans le setInterval :
+       `setScore(prevScore => prevScore + perSecond);`
+   - Ajuster l'intervalle si nécessaire (1000 ms pour 1 seconde plutôt que 500 ms).
+   - Enlever le `;;` final et assurer `export default App;`.
+
+3) Lancer le projet et inspecter les erreurs
+   - Dans le terminal du projet, installez les dépendances si nécessaire (ici Vite est en devDep) :
+     `npm install` (ou `npm ci` si vous avez lockfile)
+   - Démarrer le serveur dev :
+     `npm run dev`
+   - Ouvrir l'URL indiquée par Vite (généralement `http://localhost:5173`) et regarder la console du navigateur et le terminal pour les erreurs.
+
+4) Vérifier les composants et liaisons
+   - Ouvrir `src/components/ClickButton.jsx`, `Score.jsx`, `Shop.jsx` et vérifier qu'ils exportent correctement et n'ont pas d'erreurs de syntaxe.
+   - Si des imports utilisent des extensions incorrectes ou chemins relatifs erronés, corrigez-les.
+
+5) Nettoyage et bonnes pratiques
+   - Garder un seul point d'entrée (`src/index.jsx`) qui monte `App` sur `#root`.
+   - Utiliser `useEffect` proprement pour l'intervalle et s'assurer de nettoyer l'intervalle.
+   - Tester chaque correction progressivement et relire les erreurs affichées par Vite.
+
+Commandes utiles pour déboguer
+ - Installer : `npm install`
+ - Lancer dev server : `npm run dev`
+ - Construire : `npm run build`
+ - Ouvrir la console du navigateur (F12) pour voir erreurs runtime
+
+Fichier `src/App.jsx` — corrections rapides proposées (extraits)
+  import { useState, useEffect } from 'react';
+  const [perClick, setPerClick] = useState(1);
+  const [perSecond, setPerSecond] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setScore(prev => prev + perSecond);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [perSecond]);
+
+Si vous voulez, je peux appliquer ces corrections automatiquement (corriger `public/index.html` et `src/App.jsx`), ou je peux vous donner un patch que vous appliquerez vous-même.
+
+--- Fin du diagnostic ---
