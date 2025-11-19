@@ -1,22 +1,35 @@
 import React, { useState, useEffect } from "react";
 
-export default function Shop({ score, setScore, perClick, setPerClick, perSecond, setPerSecond }) {
-    const [clickUpgradeCost, setClickUpgradeCost] = useState(
-        () => Number(localStorage.getItem("clickUpgradeCost")) || 50
-    );
-    const [autoUpgradeCost, setAutoUpgradeCost] = useState(
-        () => Number(localStorage.getItem("autoUpgradeCost")) || 100
-    );
-    const [catUpgradeCost, setCatUpgradeCost] = useState(
-        () => Number(localStorage.getItem("catUpgradeCost")) || 250
-    );
-    const [showCatGif, setShowCatGif] = useState(false);
-    const [catBought, setCatBought] = useState(
-        () => localStorage.getItem("catBought") === "true" || false
-    );
+export default function Shop({
+                                 score, setScore,
+                                 perClick, setPerClick,
+                                 perSecond, setPerSecond,
+                                 activeMedia, setActiveMedia
+                             }) {
+    // Coûts sauvegardés dans localStorage
+    const [clickUpgradeCost, setClickUpgradeCost] = useState(() => Number(localStorage.getItem("clickUpgradeCost")) || 50);
+    const [autoUpgradeCost, setAutoUpgradeCost] = useState(() => Number(localStorage.getItem("autoUpgradeCost")) || 100);
+    const [catUpgradeCost, setCatUpgradeCost] = useState(() => Number(localStorage.getItem("catUpgradeCost")) || 250);
+    const [catBought, setCatBought] = useState(() => localStorage.getItem("catBought") === "true" || false);
 
+    // Sauvegarde des coûts
+    useEffect(() => {
+        localStorage.setItem("clickUpgradeCost", clickUpgradeCost);
+        localStorage.setItem("autoUpgradeCost", autoUpgradeCost);
+        localStorage.setItem("catUpgradeCost", catUpgradeCost);
+    }, [clickUpgradeCost, autoUpgradeCost, catUpgradeCost]);
 
+    // Assurer que le GIF acheté reste visible après reload
+    useEffect(() => {
+        if (catBought && !activeMedia.some(m => m.src === "/src/img/débile.gif")) {
+            setActiveMedia(prev => [
+                ...prev,
+                { src: "/src/img/débile.gif", top: "20px", left: "80%", width: "150px" }
+            ]);
+        }
+    }, [catBought, activeMedia, setActiveMedia]);
 
+    // Fonctions d’achat
     const buyClickUpgrade = () => {
         if (score >= clickUpgradeCost) {
             setScore(score - clickUpgradeCost);
@@ -32,23 +45,22 @@ export default function Shop({ score, setScore, perClick, setPerClick, perSecond
             setAutoUpgradeCost(Math.floor(autoUpgradeCost * 1.5));
         }
     };
+
     const buyCatUpgrade = () => {
         if (score >= catUpgradeCost) {
             setScore(score - catUpgradeCost);
             setPerSecond(perSecond + 10);
             setCatUpgradeCost(Math.floor(catUpgradeCost * 1.5));
-            setShowCatGif(true);
             setCatBought(true);
-            localStorage.setItem("catBought", "true"); // sauvegarde l’achat
+            localStorage.setItem("catBought", "true");
+
+            // Ajouter le GIF dans l’overlay
+            setActiveMedia(prev => [
+                ...prev,
+                { src: "/src/img/débile.gif", top: "20px", left: "80%", width: "150px" }
+            ]);
         }
     };
-
-    useEffect(() => {
-        localStorage.setItem("clickUpgradeCost", clickUpgradeCost);
-        localStorage.setItem("autoUpgradeCost", autoUpgradeCost);
-        localStorage.setItem("catUpgradeCost", catUpgradeCost);
-    }, [clickUpgradeCost, autoUpgradeCost, catUpgradeCost]);
-
 
     return (
         <div style={{ marginTop: "30px" }}>
@@ -66,30 +78,10 @@ export default function Shop({ score, setScore, perClick, setPerClick, perSecond
             </button>
 
             {!catBought && score >= catUpgradeCost && (
-                <button onClick={buyCatUpgrade}>
+                <button onClick={buyCatUpgrade} style={{ marginLeft: "10px" }}>
                     Gain gif chat (+10/sec) — {catUpgradeCost} pts
                 </button>
             )}
-
-
-            {(showCatGif || catBought) && (
-                <img
-                    src="/src/img/débile.gif"
-                    alt="Chat mignon !"
-                    style={{
-                        width: "150px",
-                        display: "block",
-                        margin: "20px auto",
-                        animation: showCatGif ? "bounce 0.5s" : "none"
-                    }}
-                />
-            )}
-
-
-
-
-
-
         </div>
     );
 }
