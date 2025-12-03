@@ -43,7 +43,7 @@ export default function Shop() {
 
     return (
         <div className="page-full bg-shop">
-            <div className="game-card" style={{ maxWidth: '850px', width: '95%' }}>
+            <div className="game-card" style={{ maxWidth: '900px', width: '95%' }}>
 
                 {/* HEADER BOUTIQUE */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "25px" }}>
@@ -61,23 +61,23 @@ export default function Shop() {
                 </div>
 
                 {/* TITRES DES COLONNES */}
-                <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '10px', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '15px', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
                     <h3 style={{ margin: 0, color: '#ff7675', textAlign: 'left', paddingLeft: '10px' }}>🛒 ACHETER</h3>
                     <h3 style={{ margin: 0, color: '#d63031', textAlign: 'center' }}>💰 VENDRE</h3>
                 </div>
 
                 {/* === CLICS === */}
                 <div style={{ marginBottom: '30px' }}>
-                    <h4 style={{ textAlign: 'left', color: '#555', borderLeft: '4px solid #ff7675', paddingLeft: '10px', margin: '20px 0 10px' }}>Améliorations Manuelles</h4>
+                    <h4 style={{ textAlign: 'left', color: '#555', borderLeft: '4px solid #ff7675', paddingLeft: '10px', margin: '20px 0 10px' }}>Améliorations Clics</h4>
 
                     {renderUpgradeRow("👆 +1 Clic", store.clickUpgradeCost, store.buyClickUpgrade, store.sellClickUpgrade, store.score < store.clickUpgradeCost, store.clickUpgradeCost <= 50)}
 
                     {store.score >= store.superClickThreshold && renderUpgradeRow("🌟 Super (+10k)", store.superClickCost, store.buySuperClick, store.sellSuperClick, store.score < store.superClickCost, store.superClickCost <= 500000, { borderColor: '#ffd700', background: 'rgba(255, 215, 0, 0.1)' })}
-                    {store.score >= store.megaClickThreshold && renderUpgradeRow("🔥 Méga (+100k)", store.megaClickCost, store.buyMegaClick, store.sellMegaClick, store.score < store.megaClickCost, store.megaClickCost <= 5000000, { borderColor: '#ff4757', background: 'rgba(255, 71, 87, 0.1)' })}
-                    {store.score >= store.gigaClickThreshold && renderUpgradeRow("🚀 Giga (+200k)", store.gigaClickCost, store.buyGigaClick, store.sellGigaClick, store.score < store.gigaClickCost, store.gigaClickCost <= 20000000, { borderColor: '#2ed573', background: 'rgba(46, 213, 115, 0.1)' })}
+                    {store.score >= store.megaClickThreshold && renderUpgradeRow("🔥 Méga (+100k)", store.megaClickCost, store.buyMegaClick, store.sellMegaClick, store.score < store.megaClickCost, store.megaClickCost <= 2500000, { borderColor: '#ff4757', background: 'rgba(255, 71, 87, 0.1)' })}
+                    {store.score >= store.gigaClickThreshold && renderUpgradeRow("🚀 Giga (+200k)", store.gigaClickCost, store.buyGigaClick, store.sellGigaClick, store.score < store.gigaClickCost, store.gigaClickCost <= 15000000, { borderColor: '#2ed573', background: 'rgba(46, 213, 115, 0.1)' })}
 
                     {/* High Level Clics */}
-                    {store.score >= store.click500kThreshold && renderUpgradeRow("💎 +500k", store.click500kCost, store.buy500k, store.sell500k, store.score < store.click500kCost, store.click500kCost <= 50000000, { borderColor: '#1e90ff', background: 'rgba(30, 144, 255, 0.1)' })}
+                    {store.score >= store.click500kThreshold && renderUpgradeRow("💎 +500k", store.click500kCost, store.buy500k, store.sell500k, store.score < store.click500kCost, store.click500kCost <= 40000000, { borderColor: '#1e90ff', background: 'rgba(30, 144, 255, 0.1)' })}
                     {store.score >= store.click1mThreshold && renderUpgradeRow("💎 +1M", store.click1mCost, store.buy1m, store.sell1m, store.score < store.click1mCost, store.click1mCost <= 100000000, { borderColor: '#3742fa', background: 'rgba(55, 66, 250, 0.1)' })}
                     {store.score >= store.click10mThreshold && renderUpgradeRow("💎 +10M", store.click10mCost, store.buy10m, store.sell10m, store.score < store.click10mCost, store.click10mCost <= 1000000000, { borderColor: '#5352ed', background: 'rgba(83, 82, 237, 0.1)' })}
                     {store.score >= store.click100mThreshold && renderUpgradeRow("💎 +100M", store.click100mCost, store.buy100m, store.sell100m, store.score < store.click100mCost, store.click100mCost <= 10000000000, { borderColor: '#70a1ff', background: 'rgba(112, 161, 255, 0.1)' })}
@@ -154,6 +154,12 @@ export default function Shop() {
                             <span>👑 Roi Chat (+10k/s)</span> <span>{formatNumber(store.cat3UpgradeCost)} pts</span>
                         </button>
                     ) : <div className="upgrade-btn" style={{opacity: 0.7, justifyContent: 'center', background: '#e0e0e0'}}>✅ Roi Chat acquis</div>}
+
+                    {!store.gooseBought ? (
+                        <button className="upgrade-btn" onClick={store.buyGoose} disabled={store.score < store.gooseCost}>
+                            <span>🪿 L'Oie (+500/s)</span> <span>{formatNumber(store.gooseCost)} pts</span>
+                        </button>
+                    ) : <div className="upgrade-btn" style={{opacity: 0.7, justifyContent: 'center', background: '#e0e0e0'}}>✅ Oie acquise</div>}
 
                     {!store.volcanBought ? (
                         <button className="upgrade-btn" onClick={store.buyVolcan} disabled={store.score < store.volcanCost}>
