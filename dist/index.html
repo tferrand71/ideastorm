@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>IdeaStorm</title>
+    <link rel="shortcut icon" href="/IDEAStorm/assets/IDEAStorm-WpEJojyu.ico" type="image/x-ico">
+
+    <link rel="stylesheet" crossorigin href="/IDEAStorm/assets/index-BxY-NSD2.css">
+</head>
+<body>
+
+<script>
+    window.onerror = function(message, source, lineno, colno, error) {
+        console.error("Erreur attrapée :", message);
+        const errorDiv = document.createElement("div");
+        errorDiv.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);color:red;z-index:9999;padding:20px;overflow:auto;font-family:monospace;font-size:14px;";
+        errorDiv.innerHTML = `
+                <h2 style="color:darkred;border-bottom:2px solid red;padding-bottom:10px;">Une erreur s'est produite</h2>
+                <p><strong>Message :</strong> ${message}</p>
+                <p><strong>Fichier :</strong> ${source}</p>
+                <p><strong>Ligne :</strong> ${lineno}:${colno}</p>
+                <pre style="background:#eee;padding:10px;border-radius:5px;white-space:pre-wrap;">${error && error.stack ? error.stack : "Pas de détails supplémentaires"}</pre>
+                <button onclick="this.parentNode.remove()" style="margin-top:20px;padding:10px 20px;background:darkred;color:white;border:none;cursor:pointer;">Fermer</button>
+            `;
+        document.body.appendChild(errorDiv);
+        return false;
+    };
+</script>
+
+<div id="root"></div>
+
+<script type="module" crossorigin src="/IDEAStorm/assets/index-7kgn8KLt.js"></script>
+
+</body>
+</html>
