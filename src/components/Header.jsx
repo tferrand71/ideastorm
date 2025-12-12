@@ -1,14 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useStore from "../store/useStore";
+import supabase from "../lib/supabaseClient";
 
 export default function Header() {
     const { user, setUser } = useStore();
     const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false);
 
-    const handleLogout = () => {
+    // Vérification Admin au montage
+    useEffect(() => {
+        const checkAdmin = async () => {
+            if (!user) return;
+            const { data } = await supabase
+                .from("users")
+                .select("username")
+                .eq("id", user.id)
+                .single();
+
+            if (data && data.username === "Letotoo06") {
+                setIsAdmin(true);
+            }
+        };
+        checkAdmin();
+    }, [user]);
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         setUser(null);
-        navigate("/login");
+        navigate("/login"); // Redirection fluide sans recharger la page
     };
 
     return (
@@ -23,12 +43,21 @@ export default function Header() {
                 <Link to="/" style={linkStyle}>Accueil</Link>
                 <Link to="/pages" style={linkStyle}>Boutique</Link>
                 <Link to="/leaderboard" style={linkStyle}>Leaderboard</Link>
+
+                {/* BOUTON ADMIN (Style intégré pour coller au thème) */}
+                {isAdmin && (
+                    <Link to="/admin" style={adminLinkStyle}>
+                        🛠️ ADMIN
+                    </Link>
+                )}
             </nav>
 
             <div style={userStyle}>
                 {user ? (
                     <>
-                        <div style={avatarStyle}>{user.username.charAt(0).toUpperCase()}</div>
+                        <div style={avatarStyle}>
+                            {user.email ? user.email.charAt(0).toUpperCase() : "U"}
+                        </div>
                         <button onClick={handleLogout} style={logoutBtn}>Déconnexion</button>
                     </>
                 ) : (
@@ -42,7 +71,7 @@ export default function Header() {
     );
 }
 
-/* ----------------- CSS INLINE ----------------- */
+/* ----------------- CSS INLINE (VOTRE DESIGN) ----------------- */
 const headerStyle = {
     display: "flex",
     justifyContent: "space-between",
@@ -67,6 +96,7 @@ const logoStyle = {
 const navStyle = {
     display: "flex",
     gap: "20px",
+    alignItems: "center",
 };
 
 const linkStyle = {
@@ -74,6 +104,16 @@ const linkStyle = {
     textDecoration: "none",
     fontWeight: "500",
     transition: "color 0.2s",
+};
+
+const adminLinkStyle = {
+    color: "#ff4757",
+    textDecoration: "none",
+    fontWeight: "bold",
+    border: "1px solid #ff4757",
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "0.9rem"
 };
 
 const userStyle = {
@@ -108,4 +148,6 @@ const btnStyle = {
 const logoutBtn = {
     ...btnStyle,
     backgroundColor: "#e94560",
+    border: "none",
+    cursor: "pointer",
 };

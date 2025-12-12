@@ -7,6 +7,7 @@ import Shop from "./pages/Shop.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
 import LoginForm from "./pages/LoginForm.jsx";
 import SignupForm from "./pages/SignupForm.jsx";
+import AdminPanel from "./pages/AdminPanel.jsx";
 import Header from "./components/Header.jsx";
 import MediaOverlay from "./components/MediaOverlay.jsx";
 import Snow from "./components/Snow.jsx";
@@ -89,6 +90,8 @@ export default function App() {
                 <Route path="/leaderboard" element={user ? <Leaderboard /> : <Navigate to="/login" />} />
                 <Route path="/login" element={user ? <Navigate to="/" /> : (<div className="page-full bg-auth"><div className="game-card"><LoginForm /></div></div>)} />
                 <Route path="/signup" element={user ? <Navigate to="/" /> : (<div className="page-full bg-auth"><div className="game-card"><SignupForm /></div></div>)} />
+                {/* PAGE ADMIN SECRÈTE */}
+                <Route path="/admin" element={user ? <AdminPanel /> : <Navigate to="/" />} />
             </Routes>
         </Router>
     );
