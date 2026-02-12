@@ -91,6 +91,10 @@ export default function AdminPanel() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
                     <button className="upgrade-btn" onClick={() => cheatSetRebirth(0)}>0</button>
                     <button className="upgrade-btn" onClick={() => cheatSetRebirth(1)}>1</button>
+                    <button className="upgrade-btn" onClick={() => cheatSetRebirth(2)}>2</button>
+                    <button className="upgrade-btn" onClick={() => cheatSetRebirth(3)}>3</button>
+                    <button className="upgrade-btn" onClick={() => cheatSetRebirth(4)}>4</button>
+                    <button className="upgrade-btn" onClick={() => cheatSetRebirth(5)}>5</button>
                     <button className="upgrade-btn" onClick={() => cheatSetRebirth(6)} style={{borderColor: 'gold'}}>6 (Max)</button>
                 </div>
 
